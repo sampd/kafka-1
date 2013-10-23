@@ -24,12 +24,13 @@ import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 object KafkaBuild extends Build {
   val commonSettings = Seq(
-    version := "0.7.2FF",
+    version := "0.7.2-SU",
     organization := "org.apache",
     scalacOptions ++= Seq("-deprecation", "-unchecked"),
     scalaVersion := "2.10.0",
     javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.5"),
     parallelExecution in Test := false, // Prevent tests from overrunning each other
+
     libraryDependencies ++= Seq(
       "org.scalatest"         %% "scalatest"    % "1.9" % "test",
       "log4j"                 %  "log4j"        % "1.2.15",
@@ -69,7 +70,7 @@ object KafkaBuild extends Build {
       "org.codehaus.jackson" % "jackson-mapper-asl" % "1.5.5",
       "org.apache.hadoop"    % "hadoop-core"        % "0.20.2"
     ),
-    ivyXML := 
+    ivyXML :=
        <dependencies>
          <exclude module="netty"/>
          <exclude module="javax"/>
@@ -95,14 +96,14 @@ object KafkaBuild extends Build {
     "bin/run-rat.sh" !
   }
 
-  lazy val kafka    = Project(id = "Kafka", base = file(".")).aggregate(core, examples, contrib, perf).settings((commonSettings ++ runRatTask): _*)
-  lazy val core     = Project(id = "core", base = file("core")).settings(commonSettings: _*).settings(coreSettings: _*)
-  lazy val examples = Project(id = "java-examples", base = file("examples")).settings(commonSettings :_*) dependsOn (core)
+  lazy val kafka    = Project(id = "Kafka", base = file(".")).aggregate(core,   perf).settings((commonSettings ++ runRatTask): _*)
+  lazy val core     = Project(id = "core", base = file("core")).settings((Seq(name:="kafka-core") ++ commonSettings): _*).settings(coreSettings: _*)
+  //lazy val examples = Project(id = "java-examples", base = file("examples")).settings(commonSettings :_*) dependsOn (core)
   lazy val perf     = Project(id = "perf", base = file("perf")).settings((Seq(name := "kafka-perf") ++ commonSettings):_*) dependsOn (core)
 
-  lazy val contrib        = Project(id = "contrib", base = file("contrib")).aggregate(hadoopProducer, hadoopConsumer).settings(commonSettings :_*)
-  lazy val hadoopProducer = Project(id = "hadoop-producer", base = file("contrib/hadoop-producer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
-  lazy val hadoopConsumer = Project(id = "hadoop-consumer", base = file("contrib/hadoop-consumer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
+  //lazy val contrib        = Project(id = "contrib", base = file("contrib")).aggregate(hadoopProducer, hadoopConsumer).settings(commonSettings :_*)
+  //lazy val hadoopProducer = Project(id = "hadoop-producer", base = file("contrib/hadoop-producer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
+  //lazy val hadoopConsumer = Project(id = "hadoop-consumer", base = file("contrib/hadoop-consumer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
 
 
   // POM Tweaking for core:
